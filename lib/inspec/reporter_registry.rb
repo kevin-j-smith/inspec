@@ -18,7 +18,9 @@ module Inspec
       # Upon creation, activate all reporter plugins
       activators = Inspec::Plugin::V2::Registry.instance.find_activators(plugin_type: :reporter)
 
-      @plugins = activators.map do |activator|
+      @plugins = activators.select do |activator| 
+        (@@reporters.keys.include? activator.plugin_name)
+      end.map do |activator|
         # TODO: only activate those reporters that have been registered
         activator.activate!
         activator.implementation_class.new
@@ -41,8 +43,7 @@ module Inspec
     #def append_result(control, result)
     def output(str, newline = true)
       #@plugins.map { |plugin| plugin.append_result(control, result) }
-      puts "HELLO\n#{@plugins.to_yaml}\nWORLD\n#{@@reporters.to_yaml}\n"
-      @plugins.map { |plugin| plugin.output(str, newline) }
+      @plugins.each { |plugin| plugin.output(str, newline) }
     end
 
     #-------------------------------------------------------------#
@@ -50,7 +51,7 @@ module Inspec
     #-------------------------------------------------------------#
 
     def rendered_output
-      @plugins.map { |plugin| plugin.rendered_output }
+      @plugins.each { |plugin| plugin.rendered_output }
     end
 
     #-------------------------------------------------------------#
@@ -58,7 +59,7 @@ module Inspec
     #-------------------------------------------------------------#
 
     def render
-      @plugins.map { |plugin| plugin.render }
+      @plugins.each { |plugin| plugin.render }
     end
 
     def report(run_data)

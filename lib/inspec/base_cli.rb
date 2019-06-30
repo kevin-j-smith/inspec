@@ -222,14 +222,12 @@ module Inspec
 
     def suppress_log_output?(opts)
       return false if opts["reporter"].nil?
-
-      match = %w{json json-min json-rspec json-automate junit html yaml documentation progress} & opts["reporter"].keys
-      unless match.empty?
-        match.each do |m|
-          Inspec::ReporterRegistry.register_reporter('inspec-json-reporter',m)
-          # check to see if we are outputting to stdout
-          return true if opts["reporter"][m]["stdout"] == true
-        end
+      opts['reporter'].each do |key,value|
+        reporter = key
+        reporter = "inspec-#{key}-reporter" unless  key.start_with? 'inspec-'
+        Inspec::ReporterRegistry.register_reporter(reporter, value)
+        # check to see if we are outputting to stdout
+        return true if value["stdout"] == true
       end
       false
     end

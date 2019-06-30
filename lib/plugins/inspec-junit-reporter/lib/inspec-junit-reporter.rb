@@ -2,7 +2,7 @@
 module InspecPlugins
   module JunitReporter
     class Plugin < Inspec.plugin(2)
-      plugin_name :'inspec-unit-reporter'
+      plugin_name :'inspec-junit-reporter'
 
       reporter :junit do
         require_relative 'inspec-junit-reporter/reporter'
