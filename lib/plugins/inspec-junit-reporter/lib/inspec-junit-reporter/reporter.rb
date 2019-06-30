@@ -1,5 +1,22 @@
-module Inspec::Reporters
-  class Junit < Base
+# frozen_string_literal: true
+  
+module InspecPlugins
+  module JunitReporter
+    class Reporter < Inspec.plugin(2, :reporter)
+
+      def output(output, newline = true)
+        puts "JunitReporter.output: #{output}"
+      end
+
+      def resolved_output
+        puts "JunitReporter.resolved_output:"
+      end
+
+      def resolve
+        puts "JunitReporter.resolve:"
+      end
+    end
+
     def render
       require "rexml/document"
       xml_output = REXML::Document.new

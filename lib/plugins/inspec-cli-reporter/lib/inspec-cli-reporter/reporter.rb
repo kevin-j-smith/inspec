@@ -1,5 +1,9 @@
-module Inspec::Reporters
-  class CLI < Base
+# frozen_string_literal: true
+  
+module InspecPlugins
+  module CliReporter
+    class Reporter < Inspec.plugin(2, :reporter)
+
     case RUBY_PLATFORM
     when /windows|mswin|msys|mingw|cygwin/
       # Most currently available Windows terminals have poor support
@@ -39,6 +43,19 @@ module Inspec::Reporters
     end
 
     MULTI_TEST_CONTROL_SUMMARY_MAX_LEN = 60
+
+    def output(output, newline = true)
+        puts "CliReporter.output: #{output}"
+      end
+
+      def resolved_output
+        puts "CliReporter.resolved_output:"
+      end
+
+      def resolve
+        puts "CliReporter.resolve:"
+      end
+    end
 
     def render
       run_data[:profiles].each do |profile|

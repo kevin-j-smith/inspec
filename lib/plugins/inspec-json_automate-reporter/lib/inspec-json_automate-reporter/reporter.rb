@@ -1,7 +1,24 @@
+# frozen_string_literal: true
+  
 require "json"
 
-module Inspec::Reporters
-  class JsonAutomate < Json
+module InspecPlugins
+  module JsonAutomateReporter
+    class Reporter < Inspec.plugin(2, :reporter)
+
+      def output(output, newline = true)
+        puts "JsonAutomateReporter.output: #{output}"
+      end
+
+      def resolved_output
+        puts "JsonAutomateReporter.resolved_output:"
+      end
+
+      def resolve
+        puts "JsonAutomateReporter.resolve:"
+      end
+    end
+
     def initialize(config)
       super(config)
       @profiles = []

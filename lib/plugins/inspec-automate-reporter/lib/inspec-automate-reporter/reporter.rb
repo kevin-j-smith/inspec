@@ -1,8 +1,25 @@
+# frozen_string_literal: true
+  
 require "json"
 require "net/http"
 
-module Inspec::Reporters
-  class Automate < JsonAutomate
+module InspecPlugins
+  module AutomateReporter
+    class Reporter < Inspec.plugin(2, :reporter)
+
+      def output(output, newline = true)
+        puts "AutomateReporter.output: #{output}"
+      end
+
+      def resolved_output
+        puts "AutomateReporter.resolved_output:"
+      end
+
+      def resolve
+        puts "AutomateReporter.resolve:"
+      end
+    end
+
     def initialize(config)
       super(config)
 

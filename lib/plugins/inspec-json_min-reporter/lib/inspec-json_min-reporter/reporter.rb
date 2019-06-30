@@ -1,7 +1,24 @@
+# frozen_string_literal: true
+  
 require "json"
 
-module Inspec::Reporters
-  class JsonMin < Base
+module InspecPlugins
+  module JsonMinReporter
+    class Reporter < Inspec.plugin(2, :reporter)
+
+      def output(output, newline = true)
+        puts "JsonMinReporter.output: #{output}"
+      end
+
+      def resolved_output
+        puts "JsonMinReporter.resolved_output:"
+      end
+
+      def resolve
+        puts "JsonMinReporter.resolve:"
+      end
+    end
+
     def render
       output(report.to_json, false)
     end

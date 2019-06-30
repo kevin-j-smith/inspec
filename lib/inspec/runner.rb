@@ -10,7 +10,7 @@ require "inspec/config"
 require "inspec/dependencies/cache"
 require "inspec/dist"
 require "inspec/resources"
-require "inspec/reporters"
+require "inspec/reporter_registry"
 require "inspec/runner_rspec"
 # spec requirements
 
@@ -124,16 +124,11 @@ module Inspec
     end
 
     def render_output(run_data)
-      return if @conf["reporter"].nil?
-
-      @conf["reporter"].each do |reporter|
-        result = Inspec::Reporters.render(reporter, run_data)
-        raise Inspec::ReporterError, "Error generating reporter '#{reporter[0]}'" if result == false
-      end
+      Inspec::ReporterRegistry.output(run_data)
     end
 
     def report
-      Inspec::Reporters.report(@conf["reporter"].first, @run_data)
+      Inspec::ReporterRegistry.report(@run_data)
     end
 
     def write_lockfile(profile)

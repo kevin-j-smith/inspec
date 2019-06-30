@@ -23,6 +23,8 @@ module Inspec
       shell_command
     }.freeze
 
+    @@valid_fields = %w{version cli_options credentials compliance reporter}
+
     extend Forwardable
 
     # Many parts of InSpec expect to treat the Config as a Hash
@@ -76,6 +78,11 @@ module Inspec
     # @return [Hash]
     def telemetry_options
       final_options.select { |key, _| key.include?("telemetry") }
+    end
+
+    # Use this to register valid configuration fields
+    def self.regsiter_valid_field(field)
+      @@valid_fields.push(field) unless field && (@@valid_fields.include? field)
     end
 
     #-----------------------------------------------------------------------#
@@ -289,7 +296,6 @@ module Inspec
         raise Inspec::ConfigError::Invalid, "Unsupported config file version '#{version}' - currently supported versions: 1.1"
       end
 
-      valid_fields = %w{version cli_options credentials compliance reporter}.sort
       @cfg_file_contents.keys.each do |seen_field|
         unless valid_fields.include?(seen_field)
           raise Inspec::ConfigError::Invalid, "Unrecognized top-level configuration field #{seen_field}.  Recognized fields: #{valid_fields.join(", ")}"
@@ -350,6 +356,8 @@ module Inspec
 
       # Highest precedence: merge in any options defined via the CLI
       options.merge!(@cli_opts)
+
+      options.merge!(@cfg_file_contents)
 
       options
     end
