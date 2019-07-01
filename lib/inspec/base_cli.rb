@@ -5,8 +5,6 @@ require "inspec/config"
 require "inspec/dist"
 require "inspec/utils/deprecation/global_method"
 
-require "inspec/reporter_registry"
-
 # Allow end of options during array type parsing
 # https://github.com/erikhuda/thor/issues/631
 class Thor::Arguments
@@ -222,13 +220,13 @@ module Inspec
 
     def suppress_log_output?(opts)
       return false if opts["reporter"].nil?
-      opts['reporter'].each do |key,value|
-        reporter = key
-        reporter = "inspec-#{key}-reporter" unless  key.start_with? 'inspec-'
-        Inspec::ReporterRegistry.register_reporter(reporter, value)
-        # check to see if we are outputting to stdout
-        return true if value["stdout"] == true
-      end
+      #opts['reporter'].each do |key,value|
+      #  reporter = key
+      #  reporter = "inspec-#{key}-reporter" unless  key.start_with? 'inspec-'
+      #  Inspec::ReporterRegistry.register_reporter(reporter, value)
+      #  # check to see if we are outputting to stdout
+      #  return true if value["stdout"] == true
+      #end
       false
     end
 

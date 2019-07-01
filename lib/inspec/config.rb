@@ -7,6 +7,7 @@ require "forwardable"
 require "thor"
 require "base64"
 require "inspec/base_cli"
+require "inspec/reporter_registry"
 
 module Inspec
   class Config
@@ -387,29 +388,30 @@ module Inspec
 
       # parse out cli to proper report format
       if options["reporter"].is_a?(Array)
-        reports = {}
+        reporters = {}
         options["reporter"].each do |report|
           reporter_name, destination = report.split(":", 2)
+
           if destination.nil? || destination.strip == "-"
-            reports[reporter_name] = { "stdout" => true }
+            reporters[reporter_name] = { "stdout" => true }
           else
-            reports[reporter_name] = {
+            reporters[reporter_name] = {
               "file" => destination,
-              "stdout" => false,
+              "stdout" => false
             }
-            reports[reporter_name]["target_id"] = options["target_id"] if options["target_id"]
           end
         end
-        options["reporter"] = reports
+        options["reporter"] = reporters
       end
 
       # add in stdout if not specified
-      if options["reporter"].is_a?(Hash)
-        options["reporter"].each do |reporter_name, config|
-          options["reporter"][reporter_name] = {} if config.nil?
-          options["reporter"][reporter_name]["stdout"] = true if options["reporter"][reporter_name].empty?
-          options["reporter"][reporter_name]["target_id"] = options["target_id"] if options["target_id"]
-        end
+      options["reporter"].each do |reporter_name, config|
+        options["reporter"][reporter_name] = {} if config.nil?
+        options["reporter"][reporter_name]["stdout"] = true if options["reporter"][reporter_name].empty?
+        options["reporter"][reporter_name]["target_id"] = options["target_id"] if options["target_id"]
+        actual_reporter_name = reporter_name
+        actual_reporter_name = "inspec-#{reporter_name}-reporter" unless (reporter_name.start_with? 'inspec-')
+        Inspec::ReporterRegistry.register_reporter(actual_reporter_name, config)
       end
 
       validate_reporters!(options["reporter"])

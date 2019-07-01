@@ -6,19 +6,6 @@ module InspecPlugins
   module JsonAutomateReporter
     class Reporter < Inspec.plugin(2, :reporter)
 
-      def output(output, newline = true)
-        puts "JsonAutomateReporter.output: #{output}"
-      end
-
-      def resolved_output
-        puts "JsonAutomateReporter.resolved_output:"
-      end
-
-      def resolve
-        puts "JsonAutomateReporter.resolve:"
-      end
-    end
-
     def initialize(config)
       super(config)
       @profiles = []
@@ -26,7 +13,10 @@ module InspecPlugins
 
     def render
       output(report.to_json, false)
+      super
     end
+
+    private
 
     def report
       # grab profiles from the json parent class
@@ -36,9 +26,9 @@ module InspecPlugins
         platform: platform,
         profiles: merge_profiles,
         statistics: {
-          duration: run_data[:statistics][:duration],
+          duration: @run_data[:statistics][:duration],
         },
-        version: run_data[:version],
+        version: @run_data[:version],
       }
 
       # optional json-config passthrough options
@@ -47,8 +37,6 @@ module InspecPlugins
       end
       output
     end
-
-    private
 
     def merge_profiles
       @profiles.each do |profile|

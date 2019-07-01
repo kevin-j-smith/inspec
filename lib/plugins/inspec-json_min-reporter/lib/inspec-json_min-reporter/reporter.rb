@@ -6,32 +6,22 @@ module InspecPlugins
   module JsonMinReporter
     class Reporter < Inspec.plugin(2, :reporter)
 
-      def output(output, newline = true)
-        puts "JsonMinReporter.output: #{output}"
-      end
-
-      def resolved_output
-        puts "JsonMinReporter.resolved_output:"
-      end
-
-      def resolve
-        puts "JsonMinReporter.resolve:"
-      end
-    end
-
     def render
       output(report.to_json, false)
+      super
     end
+
+    private
 
     def report # rubocop:disable Metrics/AbcSize
       report = {
         controls: [],
-        statistics: { duration: run_data[:statistics][:duration] },
-        version: run_data[:version],
+        statistics: { duration: @run_data[:statistics][:duration] },
+        version: @run_data[:version],
       }
 
       # collect all test results and add them to the report
-      run_data[:profiles].each do |profile|
+      @run_data[:profiles].each do |profile|
         profile_id = profile[:name]
         next unless profile[:controls]
 

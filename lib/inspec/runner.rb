@@ -124,7 +124,7 @@ module Inspec
     end
 
     def render_output(run_data)
-      Inspec::ReporterRegistry.output(run_data)
+      Inspec::ReporterRegistry.render_output(run_data)
     end
 
     def report

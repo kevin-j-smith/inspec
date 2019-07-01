@@ -6,20 +6,6 @@ require "net/http"
 module InspecPlugins
   module AutomateReporter
     class Reporter < Inspec.plugin(2, :reporter)
-
-      def output(output, newline = true)
-        puts "AutomateReporter.output: #{output}"
-      end
-
-      def resolved_output
-        puts "AutomateReporter.resolved_output:"
-      end
-
-      def resolve
-        puts "AutomateReporter.resolve:"
-      end
-    end
-
     def initialize(config)
       super(config)
 
@@ -30,23 +16,7 @@ module InspecPlugins
       @config["verify_ssl"] = @config["verify_ssl"] || false
     end
 
-    def enriched_report
-      # grab the report from the parent class
-      final_report = report
-
-      # Label this content as an inspec_report
-      final_report[:type] = "inspec_report"
-
-      final_report[:end_time] = Time.now.utc.strftime("%FT%TZ")
-      final_report[:node_uuid] = @config["node_uuid"] || @config["target_id"]
-      raise Inspec::ReporterError, "Cannot find a UUID for your node. Please specify one via json-config." if final_report[:node_uuid].nil?
-
-      final_report[:report_uuid] = @config["report_uuid"] || uuid_from_string(final_report[:end_time] + final_report[:node_uuid])
-
-      final_report
-    end
-
-    def send_report
+    def render
       headers = { "Content-Type" => "application/json" }
       headers["x-data-collector-token"] = @config["token"]
       headers["x-data-collector-auth"] = "version=1.0"
@@ -78,6 +48,23 @@ module InspecPlugins
     end
 
     private
+
+    def enriched_report
+      # grab the report from the parent class
+      final_report = report
+
+      # Label this content as an inspec_report
+      final_report[:type] = "inspec_report"
+
+      final_report[:end_time] = Time.now.utc.strftime("%FT%TZ")
+      final_report[:node_uuid] = @config["node_uuid"] || @config["target_id"]
+      raise Inspec::ReporterError, "Cannot find a UUID for your node. Please specify one via json-config." if final_report[:node_uuid].nil?
+
+      final_report[:report_uuid] = @config["report_uuid"] || uuid_from_string(final_report[:end_time] + final_report[:node_uuid])
+
+      final_report
+    end
+
 
     # This hashes the passed string into SHA1.
     # Then it downgrades the 160bit SHA1 to a 128bit

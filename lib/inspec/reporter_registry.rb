@@ -3,8 +3,6 @@ require "singleton"
 require "inspec/exceptions"
 require "inspec/plugin/v2"
 
-require 'yaml'
-
 module Inspec
   # The ReporterRegistry's responsibilities include:
   #   - maintaining a list of Reproter objects that are called to report results
@@ -18,12 +16,12 @@ module Inspec
       # Upon creation, activate all reporter plugins
       activators = Inspec::Plugin::V2::Registry.instance.find_activators(plugin_type: :reporter)
 
-      @plugins = activators.select do |activator| 
+      @plugins = activators.select do |activator|
         (@@reporters.keys.include? activator.plugin_name)
       end.map do |activator|
-        # TODO: only activate those reporters that have been registered
+        reporter_configuration_options = @@reporters[activator.plugin_name]
         activator.activate!
-        activator.implementation_class.new
+        activator.implementation_class.new reporter_configuration_options
       end
     end
 
@@ -37,39 +35,23 @@ module Inspec
     end
 
     #-------------------------------------------------------------#
-    #                 Support for Submitting Results
-    #-------------------------------------------------------------#
-
-    #def append_result(control, result)
-    def output(str, newline = true)
-      #@plugins.map { |plugin| plugin.append_result(control, result) }
-      @plugins.each { |plugin| plugin.output(str, newline) }
-    end
-
-    #-------------------------------------------------------------#
     #              Support for Finializing Profile Run
     #-------------------------------------------------------------#
 
-    def rendered_output
-      @plugins.each { |plugin| plugin.rendered_output }
-    end
-
-    #-------------------------------------------------------------#
-    #              Support for Finializing Profile Run
-    #-------------------------------------------------------------#
-
-    def render
-      @plugins.each { |plugin| plugin.render }
+    def render_output(run_data)
+      @plugins.each do |plugin|
+        plugin.run_data = run_data
+        plugin.render
+      end
     end
 
     def report(run_data)
-      puts "ReporterRegistry.report: #{run_data.to_yaml}"
+      @plugins.each { |plugin| plugin.report(@run_data) }
     end
 
     #-------------------------------------------------------------#
     #               Other Support
     #-------------------------------------------------------------#
-    public
 
     # Used in testing
     def __reset
@@ -80,10 +62,7 @@ module Inspec
     # These class methods are convenience methods so you don't always
     # have to call #instance when calling the registry
     [
-      :list_reporters,
-      :output,
-      :rendered_output,
-      :render,
+      :render_output,
       :report
     ].each do |meth|
       define_singleton_method(meth) do |*args|

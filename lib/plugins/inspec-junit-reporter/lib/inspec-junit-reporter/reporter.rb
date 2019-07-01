@@ -4,19 +4,6 @@ module InspecPlugins
   module JunitReporter
     class Reporter < Inspec.plugin(2, :reporter)
 
-      def output(output, newline = true)
-        puts "JunitReporter.output: #{output}"
-      end
-
-      def resolved_output
-        puts "JunitReporter.resolved_output:"
-      end
-
-      def resolve
-        puts "JunitReporter.resolve:"
-      end
-    end
-
     def render
       require "rexml/document"
       xml_output = REXML::Document.new
@@ -25,7 +12,7 @@ module InspecPlugins
       testsuites = REXML::Element.new("testsuites")
       xml_output.add(testsuites)
 
-      run_data[:profiles].each do |profile|
+      @run_data[:profiles].each do |profile|
         testsuites.add(build_profile_xml(profile))
       end
 
@@ -33,6 +20,7 @@ module InspecPlugins
       formatter.compact = true
       output(formatter.write(xml_output.xml_decl, ""))
       output(formatter.write(xml_output.root, ""))
+      super
     end
 
     private
@@ -59,7 +47,7 @@ module InspecPlugins
       result_xml = REXML::Element.new("testcase")
       result_xml.add_attribute("name", result[:code_desc])
       result_xml.add_attribute("classname", control[:title].nil? ? "#{profile_name}.Anonymous" : "#{profile_name}.#{control[:id]}")
-      result_xml.add_attribute("target", run_data[:platform][:target].nil? ? "" : run_data[:platform][:target].to_s)
+      result_xml.add_attribute("target", @run_data[:platform][:target].nil? ? "" : @run_data[:platform][:target].to_s)
       result_xml.add_attribute("time", result[:run_time])
 
       if result[:status] == "failed"
