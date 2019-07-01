@@ -16,4 +16,6 @@ Metrics/AbcSize:
 Metrics/CyclomaticComplexity:
   Exclude:
     - 'lib/plugins/*-reporter/lib/**/*'
-
+Style/ClassVars:
+  Exclude:
+    - 'lib/inspec/reporter_registry.rb'

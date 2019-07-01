@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'forwardable'
 require 'singleton'
 require 'inspec/config'
@@ -11,28 +13,28 @@ module Inspec
     include Singleton
     extend Forwardable
 
-    @@reporters = {}
-
-    def initialize
-      # Upon creation, activate all reporter plugins
-      activators = Inspec::Plugin::V2::Registry.instance.find_activators(plugin_type: :reporter)
-
-      @plugins = activators.select do |activator|
-        @@reporters.key?(activator.plugin_name)
-      end.map do |activator|
-        reporter_configuration_options = @@reporters[activator.plugin_name]
-        activator.activate!
-        activator.implementation_class.new reporter_configuration_options
-      end
-    end
-
     #-------------------------------------------------------------#
     #                 Support for Regsitering Reporters
     #-------------------------------------------------------------#
+    @@reporters = {}
 
     def self.register_reporter(reporter_name, options = {})
       # create the reporter
       @@reporters[reporter_name.to_sym] = options
+    end
+
+    def initialize
+      # Upon creation, activate all reporter plugins
+      activators = Inspec::Plugin::V2::Registry.instance.find_activators(plugin_type: :reporter) # rubocop:disable Metrics/LineLength
+
+      @plugins = activators.select do |activator|
+        @@reporters.key?(activator.plugin_name)
+      end
+      @plugins = @plugins.map do |activator|
+        reporter_configuration_options = @@reporters[activator.plugin_name]
+        activator.activate!
+        activator.implementation_class.new reporter_configuration_options
+      end
     end
 
     #-------------------------------------------------------------#
