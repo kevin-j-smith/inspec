@@ -1,7 +1,8 @@
-require "forwardable"
-require "singleton"
-require "inspec/exceptions"
-require "inspec/plugin/v2"
+require 'forwardable'
+require 'singleton'
+require 'inspec/config'
+require 'inspec/exceptions'
+require 'inspec/plugin/v2'
 
 module Inspec
   # The ReporterRegistry's responsibilities include:
@@ -17,7 +18,7 @@ module Inspec
       activators = Inspec::Plugin::V2::Registry.instance.find_activators(plugin_type: :reporter)
 
       @plugins = activators.select do |activator|
-        (@@reporters.keys.include? activator.plugin_name)
+        @@reporters.key?(activator.plugin_name)
       end.map do |activator|
         reporter_configuration_options = @@reporters[activator.plugin_name]
         activator.activate!
@@ -45,7 +46,7 @@ module Inspec
       end
     end
 
-    def report(run_data)
+    def report(_run_data)
       @plugins.each { |plugin| plugin.report(@run_data) }
     end
 
@@ -61,9 +62,9 @@ module Inspec
 
     # These class methods are convenience methods so you don't always
     # have to call #instance when calling the registry
-    [
-      :render_output,
-      :report
+    %i[
+      render_output
+      report
     ].each do |meth|
       define_singleton_method(meth) do |*args|
         instance.send(meth, *args)

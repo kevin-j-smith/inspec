@@ -1,3 +1,5 @@
+require 'inspec/config'
+
 module Inspec::Plugin::V2::PluginType
   class Reporter < Inspec::Plugin::V2::PluginBase
     register_plugin_type(:reporter)
@@ -8,12 +10,10 @@ module Inspec::Plugin::V2::PluginType
     # Implementation classes must implement these methods.
     def initialize(config)
       @config = config
-      @output = ""
+      @output = ''
     end
 
-    def config
-      @config
-    end
+    attr_reader :config
 
     # Append output
     # @param String output string
@@ -43,11 +43,9 @@ module Inspec::Plugin::V2::PluginType
         print @output
         $stdout.flush
       end
-      @output = ""
+      @output = ''
     end
 
-    def run_data=(run_data)
-      @run_data = run_data
-    end
+    attr_writer :run_data
   end
 end
