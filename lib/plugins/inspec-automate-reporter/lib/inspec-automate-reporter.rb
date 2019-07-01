@@ -7,7 +7,7 @@ module InspecPlugins
       plugin_name :'inspec-automate-reporter'
 
       reporter :automate do
-        require_relative 'inspec-automate-reporter/reporter'
+        require_relative "inspec-automate-reporter/reporter"
         InspecPlugins::AutomateReporter::Reporter
       end
     end

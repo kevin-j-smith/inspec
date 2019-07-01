@@ -6,11 +6,11 @@ module InspecPlugins
     #   junit xml specification format
     class Reporter < Inspec.plugin(2, :reporter)
       def render # rubocop:disable Metrics/MethodLength
-        require 'rexml/document'
+        require "rexml/document"
         xml_output = REXML::Document.new
         xml_output.add(REXML::XMLDecl.new)
 
-        testsuites = REXML::Element.new('testsuites')
+        testsuites = REXML::Element.new("testsuites")
         xml_output.add(testsuites)
 
         @run_data[:profiles].each do |profile|
@@ -19,21 +19,21 @@ module InspecPlugins
 
         formatter = REXML::Formatters::Pretty.new
         formatter.compact = true
-        output(formatter.write(xml_output.xml_decl, ''))
-        output(formatter.write(xml_output.root, ''))
+        output(formatter.write(xml_output.xml_decl, ""))
+        output(formatter.write(xml_output.root, ""))
         super
       end
 
       private
 
       def build_profile_xml(profile) # rubocop:disable Metrics/MethodLength, Metrics/LineLength
-        profile_xml = REXML::Element.new('testsuite')
+        profile_xml = REXML::Element.new("testsuite")
 
         # rubocop:disable Metrics/LineLength
-        profile_xml.add_attribute('name', profile[:name])
-        profile_xml.add_attribute('tests', count_profile_tests(profile))
-        profile_xml.add_attribute('failed', count_profile_failed_tests(profile))
-        profile_xml.add_attribute('failures', count_profile_failed_tests(profile))
+        profile_xml.add_attribute("name", profile[:name])
+        profile_xml.add_attribute("tests", count_profile_tests(profile))
+        profile_xml.add_attribute("failed", count_profile_failed_tests(profile))
+        profile_xml.add_attribute("failures", count_profile_failed_tests(profile))
         # rubocop:enable Metrics/LineLength
 
         profile[:controls].each do |control|
@@ -48,21 +48,21 @@ module InspecPlugins
       end
 
       def build_result_xml(profile_name, control, result) # rubocop:disable Metrics/MethodLength, Metrics/LineLength
-        result_xml = REXML::Element.new('testcase')
+        result_xml = REXML::Element.new("testcase")
 
         # rubocop:disable Metrics/LineLength
-        result_xml.add_attribute('name', result[:code_desc])
-        result_xml.add_attribute('classname', control[:title].nil? ? "#{profile_name}.Anonymous" : "#{profile_name}.#{control[:id]}")
-        result_xml.add_attribute('target', @run_data[:platform][:target].nil? ? '' : @run_data[:platform][:target].to_s)
-        result_xml.add_attribute('time', result[:run_time])
+        result_xml.add_attribute("name", result[:code_desc])
+        result_xml.add_attribute("classname", control[:title].nil? ? "#{profile_name}.Anonymous" : "#{profile_name}.#{control[:id]}")
+        result_xml.add_attribute("target", @run_data[:platform][:target].nil? ? "" : @run_data[:platform][:target].to_s)
+        result_xml.add_attribute("time", result[:run_time])
         # rubocop:enable Metrics/LineLength
 
-        if result[:status] == 'failed'
-          failure_element = REXML::Element.new('failure')
-          failure_element.add_attribute('message', result[:message])
+        if result[:status] == "failed"
+          failure_element = REXML::Element.new("failure")
+          failure_element.add_attribute("message", result[:message])
           result_xml.add(failure_element)
-        elsif result[:status] == 'skipped'
-          result_xml.add_element('skipped')
+        elsif result[:status] == "skipped"
+          result_xml.add_element("skipped")
         end
 
         result_xml
@@ -80,7 +80,7 @@ module InspecPlugins
             acc
           else
             acc + elem[:results].reduce(0) do |fail_test_total, test_case|
-              test_case[:status] == 'failed' ? fail_test_total + 1 : fail_test_total # rubocop: disable Metrics/LineLength
+              test_case[:status] == "failed" ? fail_test_total + 1 : fail_test_total # rubocop: disable Metrics/LineLength
             end
           end
         end

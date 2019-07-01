@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'json'
-require 'net/http'
+require "json"
+require "net/http"
 
 module InspecPlugins
   module AutomateReporter
@@ -12,25 +12,25 @@ module InspecPlugins
         super(config)
 
         # allow the insecure flag
-        @config['verify_ssl'] = !@config['insecure'] if @config.key?('insecure')
+        @config["verify_ssl"] = !@config["insecure"] if @config.key?("insecure")
 
         # default to not verifying ssl for sending reports
-        @config['verify_ssl'] = @config['verify_ssl'] || false
+        @config["verify_ssl"] = @config["verify_ssl"] || false
       end
 
       def render # rubocop:disable Metrics/MethodLength
-        headers = { 'Content-Type' => 'application/json' }
-        headers['x-data-collector-token'] = @config['token']
-        headers['x-data-collector-auth'] = 'version=1.0'
+        headers = { "Content-Type" => "application/json" }
+        headers["x-data-collector-token"] = @config["token"]
+        headers["x-data-collector-auth"] = "version=1.0"
 
-        uri = URI(@config['url'])
+        uri = URI(@config["url"])
         req = Net::HTTP::Post.new(uri.path, headers)
         req.body = enriched_report.to_json
         begin
           Inspec::Log.debug "Posting report to Chef Automate: #{uri.path}"
           http = Net::HTTP.new(uri.hostname, uri.port)
-          http.use_ssl = uri.scheme == 'https'
-          http.verify_mode = if @config['verify_ssl'] == true
+          http.use_ssl = uri.scheme == "https"
+          http.verify_mode = if @config["verify_ssl"] == true
                                OpenSSL::SSL::VERIFY_PEER
                              else
                                OpenSSL::SSL::VERIFY_NONE
@@ -57,18 +57,18 @@ module InspecPlugins
         final_report = report
 
         # Label this content as an inspec_report
-        final_report[:type] = 'inspec_report'
+        final_report[:type] = "inspec_report"
 
-        final_report[:end_time] = Time.now.utc.strftime('%FT%TZ')
-        final_report[:node_uuid] = @config['node_uuid'] || @config['target_id']
+        final_report[:end_time] = Time.now.utc.strftime("%FT%TZ")
+        final_report[:node_uuid] = @config["node_uuid"] || @config["target_id"]
         if final_report[:node_uuid].nil?
           raise Inspec::ReporterError,
-                'Cannot find a UUID for your node. ' \
-                'Please specify one via json-config.'
+                "Cannot find a UUID for your node. " \
+                "Please specify one via json-config."
         end
 
         # rubocop:disable Metrics/LineLength
-        final_report[:report_uuid] = @config['report_uuid'] || uuid_from_string(final_report[:end_time] + final_report[:node_uuid])
+        final_report[:report_uuid] = @config["report_uuid"] || uuid_from_string(final_report[:end_time] + final_report[:node_uuid])
         # rubocop:enable Metrics/LineLength
 
         final_report
@@ -80,11 +80,11 @@ module InspecPlugins
       def uuid_from_string(string)
         hash = Digest::SHA1.new
         hash.update(string)
-        ary = hash.digest.unpack('NnnnnN')
+        ary = hash.digest.unpack("NnnnnN")
         ary[2] = (ary[2] & 0x0FFF) | (5 << 12)
         ary[3] = (ary[3] & 0x3FFF) | 0x8000
         # rubocop:disable Style/FormatString
-        '%08x-%04x-%04x-%04x-%04x%08x' % ary
+        "%08x-%04x-%04x-%04x-%04x%08x" % ary
         # rubocop:enable Style/FormatString
       end
     end

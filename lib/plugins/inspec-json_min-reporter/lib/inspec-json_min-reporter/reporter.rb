@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'json'
+require "json"
 
 module InspecPlugins
   module JsonMinReporter
@@ -17,7 +17,7 @@ module InspecPlugins
         report = {
           controls: [],
           statistics: { duration: @run_data[:statistics][:duration] },
-          version: @run_data[:version]
+          version: @run_data[:version],
         }
 
         # collect all test results and add them to the report
@@ -35,7 +35,7 @@ module InspecPlugins
                 profile_id: profile_id,
                 profile_sha256: profile[:sha256],
                 status: result[:status],
-                code_desc: result[:code_desc]
+                code_desc: result[:code_desc],
               }
 
               # rubocop:disable Metrics/LineLength

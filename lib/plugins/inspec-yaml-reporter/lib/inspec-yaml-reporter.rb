@@ -7,7 +7,7 @@ module InspecPlugins
       plugin_name :'inspec-yaml-reporter'
 
       reporter :json do
-        require_relative 'inspec-yaml-reporter/reporter'
+        require_relative "inspec-yaml-reporter/reporter"
         InspecPlugins::YamlReporter::Reporter
       end
     end

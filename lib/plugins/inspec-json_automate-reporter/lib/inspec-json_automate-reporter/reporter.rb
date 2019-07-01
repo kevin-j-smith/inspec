@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'json'
+require "json"
 
 module InspecPlugins
   module JsonAutomateReporter
@@ -27,13 +27,13 @@ module InspecPlugins
           platform: platform,
           profiles: merge_profiles,
           statistics: {
-            duration: @run_data[:statistics][:duration]
+            duration: @run_data[:statistics][:duration],
           },
-          version: @run_data[:version]
+          version: @run_data[:version],
         }
 
         # optional json-config passthrough options
-        %w[node_name environment roles job_uuid passthrough].each do |option|
+        %w{node_name environment roles job_uuid passthrough}.each do |option|
           output[option.to_sym] = @config[option] unless @config[option].nil?
         end
         output

@@ -7,7 +7,7 @@ module InspecPlugins
       plugin_name :'inspec-cli-reporter'
 
       reporter :cli do
-        require_relative 'inspec-cli-reporter/reporter'
+        require_relative "inspec-cli-reporter/reporter"
         InspecPlugins::CliReporter::Reporter
       end
     end

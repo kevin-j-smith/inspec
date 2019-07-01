@@ -397,7 +397,7 @@ module Inspec
           else
             reporters[reporter_name] = {
               "file" => destination,
-              "stdout" => false
+              "stdout" => false,
             }
           end
         end
@@ -410,7 +410,7 @@ module Inspec
         options["reporter"][reporter_name]["stdout"] = true if options["reporter"][reporter_name].empty?
         options["reporter"][reporter_name]["target_id"] = options["target_id"] if options["target_id"]
         actual_reporter_name = reporter_name
-        actual_reporter_name = "inspec-#{reporter_name}-reporter" unless (reporter_name.start_with? 'inspec-')
+        actual_reporter_name = "inspec-#{reporter_name}-reporter" unless reporter_name.start_with? "inspec-"
         Inspec::ReporterRegistry.register_reporter(actual_reporter_name, config)
       end
 

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'forwardable'
-require 'singleton'
-require 'inspec/config'
-require 'inspec/exceptions'
-require 'inspec/plugin/v2'
+require "forwardable"
+require "singleton"
+require "inspec/config"
+require "inspec/exceptions"
+require "inspec/plugin/v2"
 
 module Inspec
-  # The ReporterRegistry's responsibilities include:
+  # The ReporterRegistry"s responsibilities include:
   #   - maintaining a list of Reproter objects that are called to report results
   class ReporterRegistry
     include Singleton
@@ -62,12 +62,12 @@ module Inspec
       @profile_aliases = {}
     end
 
-    # These class methods are convenience methods so you don't always
+    # These class methods are convenience methods so you don"t always
     # have to call #instance when calling the registry
-    %i[
+    %i{
       render_output
       report
-    ].each do |meth|
+    }.each do |meth|
       define_singleton_method(meth) do |*args|
         instance.send(meth, *args)
       end

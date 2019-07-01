@@ -7,7 +7,7 @@ module InspecPlugins
       plugin_name :'inspec-junit-reporter'
 
       reporter :junit do
-        require_relative 'inspec-junit-reporter/reporter'
+        require_relative "inspec-junit-reporter/reporter"
         InspecPlugins::JunitReporter::Reporter
       end
     end

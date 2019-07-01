@@ -7,7 +7,7 @@ module InspecPlugins
       plugin_name :'inspec-json_automate-reporter'
 
       reporter :json_automate do
-        require_relative 'inspec-json_automate-reporter/reporter'
+        require_relative "inspec-json_automate-reporter/reporter"
         InspecPlugins::JsonAutomateReporter::Reporter
       end
     end

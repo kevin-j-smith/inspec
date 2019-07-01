@@ -1,17 +1,17 @@
 # copyright: 2015, Dominik Richter
 
-require 'forwardable'
-require 'uri'
-require 'inspec/backend'
-require 'inspec/profile_context'
-require 'inspec/profile'
-require 'inspec/metadata'
-require 'inspec/config'
-require 'inspec/dependencies/cache'
-require 'inspec/dist'
-require 'inspec/resources'
-require 'inspec/reporter_registry'
-require 'inspec/runner_rspec'
+require "forwardable"
+require "uri"
+require "inspec/backend"
+require "inspec/profile_context"
+require "inspec/profile"
+require "inspec/metadata"
+require "inspec/config"
+require "inspec/dependencies/cache"
+require "inspec/dist"
+require "inspec/resources"
+require "inspec/reporter_registry"
+require "inspec/runner_rspec"
 # spec requirements
 
 module Inspec
@@ -36,7 +36,7 @@ module Inspec
     attr_accessor :target_profiles
 
     def attributes
-      Inspec.deprecate(:rename_attributes_to_inputs, "Don't call runner.attributes, call runner.inputs")
+      Inspec.deprecate(:rename_attributes_to_inputs, "Do not call runner.attributes, call runner.inputs")
       inputs
     end
 
@@ -146,7 +146,7 @@ module Inspec
     def run_tests(with = nil)
       @run_data = @test_collector.run(with)
       # dont output anything if we want a report
-      render_output(@run_data) unless @conf['report']
+      render_output(@run_data) unless @conf["report"]
       @test_collector.exit_code
     end
 
@@ -163,7 +163,7 @@ module Inspec
     # loaded on-demand when include_content or required_content are
     # called using similar code in Inspec::DSL.
     #
-    # Once the we've loaded all of the tests files in the profile, we
+    # Once the we"ve loaded all of the tests files in the profile, we
     # query the profile for the full list of rules. Those rules are
     # registered with the @test_collector which is ultimately
     # responsible for actually running the tests.
@@ -198,7 +198,7 @@ module Inspec
     end
 
     # In some places we read the rules off of the runner, in other
-    # places we read it off of the profile context. To keep the API's
+    # places we read it off of the profile context. To keep the API"s
     # the same, we provide an #all_rules method here as well.
     def all_rules
       @rules
@@ -216,8 +216,8 @@ module Inspec
     end
 
     def eval_with_virtual_profile(command)
-      require 'fetchers/mock'
-      add_target('inspec.yml' => 'name: inspec-shell')
+      require "fetchers/mock"
+      add_target("inspec.yml" => "name: inspec-shell")
       our_profile = @target_profiles.first
       ctx = our_profile.runner_context
 
@@ -225,7 +225,7 @@ module Inspec
       # to provide access to local profiles that add resources.
       @depends.each do |dep|
         # support for windows paths
-        dep = dep.tr('\\', '/')
+        dep = dep.tr("\\", "/")
         Inspec::Profile.for_path(dep, profile_context: ctx).load_libraries
       end
 
@@ -239,8 +239,8 @@ module Inspec
 
       opts = {}
       file_path, line = block.source_location
-      opts['file_path'] = file_path
-      opts['line_number'] = line
+      opts["file_path"] = file_path
+      opts["line_number"] = line
       opts
     end
 
@@ -285,7 +285,7 @@ module Inspec
     def rspec_failed_block(arg, opts, message)
       @test_collector.example_group(*arg, opts) do
         # Send custom `it` block to RSpec
-        it '' do
+        it "" do
           # Raising here to fail the test and get proper formatting
           raise Inspec::Exceptions::ResourceFailed, message
         end
@@ -294,11 +294,11 @@ module Inspec
 
     def add_resource(method_name, arg, opts, block)
       case method_name
-      when 'describe'
+      when "describe"
         @test_collector.example_group(*arg, opts, &block)
-      when 'expect'
+      when "expect"
         block.example_group
-      when 'describe.one'
+      when "describe.one"
         tests = arg.map do |x|
           @test_collector.example_group(x[1][0], block_source_info(x[2]), &x[2])
         end
@@ -312,7 +312,7 @@ module Inspec
         successful_tests
       else
         raise "A rule was registered with #{method_name.inspect}," \
-              "which isn't understood and cannot be processed."
+              "which is not understood and cannot be processed."
       end
     end
   end

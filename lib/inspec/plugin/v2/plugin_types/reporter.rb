@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'inspec/config'
+require "inspec/config"
 
 module Inspec
   module Plugin
@@ -17,7 +17,7 @@ module Inspec
           # Implementation classes must implement these methods.
           def initialize(config)
             @config = config
-            @output = ''
+            @output = ""
           end
 
           attr_reader :config
@@ -40,18 +40,18 @@ module Inspec
 
           # Indicates the reporter should complete its report.
           def render # rubocop:disable Metrics/AbcSize
-            if config['file']
+            if config["file"]
               # create destination directory if it does not exist
-              dirname = File.dirname(config['file'])
+              dirname = File.dirname(config["file"])
               FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
 
-              File.write(config['file'], @output)
+              File.write(config["file"], @output)
             end
-            if config['stdout'] == true
+            if config["stdout"] == true
               print @output
               $stdout.flush
             end
-            @output = ''
+            @output = ""
           end
 
           attr_writer :run_data

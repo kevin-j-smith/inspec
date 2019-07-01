@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'json'
+require "json"
 
 module InspecPlugins
   module JsonReporter
@@ -18,18 +18,18 @@ module InspecPlugins
           platform: platform,
           profiles: profiles,
           statistics: {
-            duration: @run_data[:statistics][:duration]
+            duration: @run_data[:statistics][:duration],
           },
-          version: @run_data[:version]
+          version: @run_data[:version],
         }
       end
 
       def platform
         platform = {
           name: @run_data[:platform][:name],
-          release: @run_data[:platform][:release]
+          release: @run_data[:platform][:release],
         }
-        platform[:target_id] = @config['target_id'] if @config['target_id']
+        platform[:target_id] = @config["target_id"] if @config["target_id"]
         platform
       end
 
@@ -42,7 +42,7 @@ module InspecPlugins
             status: r[:status],
             code_desc: r[:code_desc],
             run_time: r[:run_time],
-            start_time: r[:start_time]
+            start_time: r[:start_time],
           }
           result[:resource] = r[:resource] if r[:resource]
           result[:skip_message] = r[:skip_message] if r[:skip_message]
@@ -71,9 +71,9 @@ module InspecPlugins
             code: c[:code],
             source_location: {
               line: c[:source_location][:line],
-              ref: c[:source_location][:ref]
+              ref: c[:source_location][:ref],
             },
-            results: profile_results(c)
+            results: profile_results(c),
           }
           controls << control
         end
@@ -87,7 +87,7 @@ module InspecPlugins
         profile[:groups].each do |g|
           group = {
             id: g[:id],
-            controls: g[:controls]
+            controls: g[:controls],
           }
           group[:title] = g[:title] if g[:title]
 
@@ -117,7 +117,7 @@ module InspecPlugins
             groups: profile_groups(p),
             controls: profile_controls(p),
             status: p[:status],
-            skip_message: p[:skip_message]
+            skip_message: p[:skip_message],
           }
           # rubocop:enable Metrica/LineLength
           profiles << profile.reject { |_k, v| v.nil? }
