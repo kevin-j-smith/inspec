@@ -4,6 +4,8 @@ require 'json'
 
 module InspecPlugins
   module JsonAutomateReporter
+    # The Json Automate Reporter will report run results in
+    #   Json that can be consumed by the Automate server
     class Reporter < Inspec.plugin(2, :reporter)
       def initialize(config)
         super(config)
@@ -17,7 +19,7 @@ module InspecPlugins
 
       private
 
-      def report
+      def report # rubocop:disable Metrics/MethodLength
         # grab profiles from the json parent class
         @profiles = profiles
 
@@ -55,12 +57,15 @@ module InspecPlugins
       def find_master_parent(profile)
         return profile unless profile.key?(:parent_profile)
 
+        # rubocop:disable Metrics/LineLength
         parent_profile = @profiles.select { |parent| parent[:name] == profile[:parent_profile] }.first
+        # rubocop:enable Metrics/LineLength
         find_master_parent(parent_profile)
       end
 
       def merge_controls(parent, child)
         parent[:controls].each do |control|
+          # rubocop:disable Metrics/LineLength
           child_control = child[:controls].select { |c| c[:id] == control[:id] }.first
           next if child_control.nil?
 
@@ -70,6 +75,7 @@ module InspecPlugins
 
             control[name] = child_value
           end
+          # rubocop:enable Metrics/LineLength
         end
       end
 

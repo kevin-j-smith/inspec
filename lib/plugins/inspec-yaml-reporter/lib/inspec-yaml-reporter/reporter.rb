@@ -1,40 +1,41 @@
 # frozen_string_literal: true
-  
-require "yaml"
+
+require 'yaml'
 
 module InspecPlugins
   module YamlReporter
-    class Reporter < Inspec.plugin(2, :reporter)
-
+    # The Yaml Reporter will report run results in a yaml format
+    class Reporter < Inspec.plugin(2, :reporter) # rubocop:disable Metrics/ClassLength, Metrics/LineLength
       def render
-        # TODO: instead find the json reporter and activate it if needed.  Then call its report method.
+        # TODO: instead find the json reporter and activate it if needed.
+        #   Then call its report method.
         output(report.to_yaml, false)
         super
       end
-  
+
       private
-  
+
       def report
         {
           platform: platform,
           profiles: profiles,
           statistics: {
-            duration: @run_data[:statistics][:duration],
+            duration: @run_data[:statistics][:duration]
           },
-          version: @run_data[:version],
+          version: @run_data[:version]
         }
       end
-  
-      def platform(@run_data)
+
+      def platform
         platform = {
           name: @run_data[:platform][:name],
-          release: @run_data[:platform][:release],
+          release: @run_data[:platform][:release]
         }
-        platform[:target_id] = @config["target_id"] if @config["target_id"]
+        platform[:target_id] = @config['target_id'] if @config['target_id']
         platform
       end
 
-      def profile_results(control)
+      def profile_results(control) # rubocop:disable Metrics/MethodLength
         results = []
         return results if control[:results].nil?
 
@@ -43,7 +44,7 @@ module InspecPlugins
             status: r[:status],
             code_desc: r[:code_desc],
             run_time: r[:run_time],
-            start_time: r[:start_time],
+            start_time: r[:start_time]
           }
           result[:resource] = r[:resource] if r[:resource]
           result[:skip_message] = r[:skip_message] if r[:skip_message]
@@ -56,7 +57,7 @@ module InspecPlugins
         results
       end
 
-      def profile_controls(profile)
+      def profile_controls(profile) # rubocop:disable Metrics/MethodLength
         controls = []
         return controls if profile[:controls].nil?
 
@@ -72,23 +73,23 @@ module InspecPlugins
             code: c[:code],
             source_location: {
               line: c[:source_location][:line],
-              ref: c[:source_location][:ref],
+              ref: c[:source_location][:ref]
             },
-            results: profile_results(c),
+            results: profile_results(c)
           }
           controls << control
         end
         controls
       end
 
-      def profile_groups(profile)
+      def profile_groups(profile) # rubocop:disable Metrics/MethodLength
         groups = []
         return groups if profile[:groups].nil?
 
         profile[:groups].each do |g|
           group = {
             id: g[:id],
-            controls: g[:controls],
+            controls: g[:controls]
           }
           group[:title] = g[:title] if g[:title]
 
@@ -97,9 +98,10 @@ module InspecPlugins
         groups
       end
 
-      def profiles(@run_data)
+      def profiles # rubocop:disable Metrics/MethodLength
         profiles = []
         @run_data[:profiles].each do |p|
+          # rubocop:disable Metrics/LineLength
           profile = {
             name: p[:name],
             version: p[:version],
@@ -111,14 +113,15 @@ module InspecPlugins
             copyright: p[:copyright],
             copyright_email: p[:copyright_email],
             supports: p[:supports],
-            attributes: (p[:inputs] ? p[:inputs] : p[:attributes]), # TODO: rename exposed field to inputs, see #3802
+            attributes: (p[:inputs] || p[:attributes]), # TODO: rename exposed field to inputs, see #3802
             parent_profile: p[:parent_profile],
             depends: p[:depends],
             groups: profile_groups(p),
             controls: profile_controls(p),
             status: p[:status],
-            skip_message: p[:skip_message],
+            skip_message: p[:skip_message]
           }
+          # rubocop:enable Metrics/LineLength
           profiles << profile.reject { |_k, v| v.nil? }
         end
         profiles
@@ -126,13 +129,13 @@ module InspecPlugins
 
       def convert_descriptions(data)
         return [] if data.nil?
+
         results = []
         data.each do |label, text|
-          results.push({ label: label.to_s, data: text })
+          results.push(label: label.to_s, data: text)
         end
         results
       end
     end
   end
 end
-

@@ -2,8 +2,10 @@
 
 module InspecPlugins
   module JunitReporter
+    # The JUnit Reporter will report run results in the
+    #   junit xml specification format
     class Reporter < Inspec.plugin(2, :reporter)
-      def render
+      def render # rubocop:disable Metrics/MethodLength
         require 'rexml/document'
         xml_output = REXML::Document.new
         xml_output.add(REXML::XMLDecl.new)
@@ -24,12 +26,15 @@ module InspecPlugins
 
       private
 
-      def build_profile_xml(profile)
+      def build_profile_xml(profile) # rubocop:disable Metrics/MethodLength, Metrics/LineLength
         profile_xml = REXML::Element.new('testsuite')
+
+        # rubocop:disable Metrics/LineLength
         profile_xml.add_attribute('name', profile[:name])
         profile_xml.add_attribute('tests', count_profile_tests(profile))
         profile_xml.add_attribute('failed', count_profile_failed_tests(profile))
         profile_xml.add_attribute('failures', count_profile_failed_tests(profile))
+        # rubocop:enable Metrics/LineLength
 
         profile[:controls].each do |control|
           next if control[:results].nil?
@@ -42,12 +47,15 @@ module InspecPlugins
         profile_xml
       end
 
-      def build_result_xml(profile_name, control, result)
+      def build_result_xml(profile_name, control, result) # rubocop:disable Metrics/MethodLength, Metrics/LineLength
         result_xml = REXML::Element.new('testcase')
+
+        # rubocop:disable Metrics/LineLength
         result_xml.add_attribute('name', result[:code_desc])
         result_xml.add_attribute('classname', control[:title].nil? ? "#{profile_name}.Anonymous" : "#{profile_name}.#{control[:id]}")
         result_xml.add_attribute('target', @run_data[:platform][:target].nil? ? '' : @run_data[:platform][:target].to_s)
         result_xml.add_attribute('time', result[:run_time])
+        # rubocop:enable Metrics/LineLength
 
         if result[:status] == 'failed'
           failure_element = REXML::Element.new('failure')
@@ -72,7 +80,7 @@ module InspecPlugins
             acc
           else
             acc + elem[:results].reduce(0) do |fail_test_total, test_case|
-              test_case[:status] == 'failed' ? fail_test_total + 1 : fail_test_total
+              test_case[:status] == 'failed' ? fail_test_total + 1 : fail_test_total # rubocop: disable Metrics/LineLength
             end
           end
         end

@@ -4,7 +4,8 @@ require 'json'
 
 module InspecPlugins
   module JsonReporter
-    class Reporter < Inspec.plugin(2, :reporter)
+    # The Json Reporter will report run results in Json format.
+    class Reporter < Inspec.plugin(2, :reporter) # rubocop:disable Metrics/ClassLength, Metrics/LineLength
       def render
         output(report.to_json, false)
         super
@@ -32,7 +33,7 @@ module InspecPlugins
         platform
       end
 
-      def profile_results(control)
+      def profile_results(control) # rubocop:disable Metrics/MethodLength, Metrics/LineLength
         results = []
         return results if control[:results].nil?
 
@@ -54,7 +55,7 @@ module InspecPlugins
         results
       end
 
-      def profile_controls(profile)
+      def profile_controls(profile) # rubocop:disable Metrics/MethodLength, Metrics/LineLength
         controls = []
         return controls if profile[:controls].nil?
 
@@ -79,7 +80,7 @@ module InspecPlugins
         controls
       end
 
-      def profile_groups(profile)
+      def profile_groups(profile) # rubocop:disable Metrics/MethodLength, Metrics/LineLength
         groups = []
         return groups if profile[:groups].nil?
 
@@ -95,9 +96,10 @@ module InspecPlugins
         groups
       end
 
-      def profiles
+      def profiles # rubocop:disable Metrics/MethodLength
         profiles = []
         @run_data[:profiles].each do |p|
+          # rubocop:disable Metrica/LineLength
           profile = {
             name: p[:name],
             version: p[:version],
@@ -117,6 +119,7 @@ module InspecPlugins
             status: p[:status],
             skip_message: p[:skip_message]
           }
+          # rubocop:enable Metrica/LineLength
           profiles << profile.reject { |_k, v| v.nil? }
         end
         profiles

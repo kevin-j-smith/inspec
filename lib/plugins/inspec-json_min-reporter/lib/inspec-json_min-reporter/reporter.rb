@@ -4,6 +4,7 @@ require 'json'
 
 module InspecPlugins
   module JsonMinReporter
+    # The Json Min Reporter will report run results in a minimal Json format
     class Reporter < Inspec.plugin(2, :reporter)
       def render
         output(report.to_json, false)
@@ -12,7 +13,7 @@ module InspecPlugins
 
       private
 
-      def report # rubocop:disable Metrics/AbcSize
+      def report # rubocop:disable Metrics/MethodLength, Metrics/LineLength, Metrics/PerceivedComplexity
         report = {
           controls: [],
           statistics: { duration: @run_data[:statistics][:duration] },
@@ -37,11 +38,13 @@ module InspecPlugins
                 code_desc: result[:code_desc]
               }
 
+              # rubocop:disable Metrics/LineLength
               result_for_report[:skip_message] = result[:skip_message] if result.key?(:skip_message)
               result_for_report[:resource] = result[:resource] if result.key?(:resource)
               result_for_report[:message] = result[:message] if result.key?(:message)
               result_for_report[:exception] = result[:exception] if result.key?(:exception)
               result_for_report[:backtrace] = result[:backtrace] if result.key?(:backtrace)
+              # rubocop:enable Metrics/LineLength
 
               report[:controls] << result_for_report
             end

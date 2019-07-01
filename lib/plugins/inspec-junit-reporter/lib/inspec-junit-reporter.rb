@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module InspecPlugins
   module JunitReporter
+    # Entry point for Inspec Reporter plugins
     class Plugin < Inspec.plugin(2)
       plugin_name :'inspec-junit-reporter'
 

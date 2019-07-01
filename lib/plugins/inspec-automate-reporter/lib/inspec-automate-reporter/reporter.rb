@@ -5,6 +5,8 @@ require 'net/http'
 
 module InspecPlugins
   module AutomateReporter
+    # The Automate Reporter plugin allows users to
+    #   report run results to the Automate Server
     class Reporter < Inspec.plugin(2, :reporter)
       def initialize(config)
         super(config)
@@ -16,7 +18,7 @@ module InspecPlugins
         @config['verify_ssl'] = @config['verify_ssl'] || false
       end
 
-      def render
+      def render # rubocop:disable Metrics/MethodLength
         headers = { 'Content-Type' => 'application/json' }
         headers['x-data-collector-token'] = @config['token']
         headers['x-data-collector-auth'] = 'version=1.0'
@@ -35,21 +37,22 @@ module InspecPlugins
                              end
 
           res = http.request(req)
-          if res.is_a?(Net::HTTPSuccess)
-            return true
-          else
-            Inspec::Log.error "send_report: POST to #{uri.path} returned: #{res.body}"
-            return false
-          end
+
+          return true if res.is_a?(Net::HTTPSuccess)
+
+          Inspec::Log.error "send_report: POST to #{uri.path} " \
+            "returned: #{res.body}"
+          return false
         rescue StandardError => e
-          Inspec::Log.error "send_report: POST to #{uri.path} returned: #{e.message}"
+          Inspec::Log.error "send_report: POST to #{uri.path} " \
+            "returned: #{e.message}"
           return false
         end
       end
 
       private
 
-      def enriched_report
+      def enriched_report # rubocop:disable Metrics/MethodLength, Metrics/LineLength
         # grab the report from the parent class
         final_report = report
 
@@ -58,9 +61,15 @@ module InspecPlugins
 
         final_report[:end_time] = Time.now.utc.strftime('%FT%TZ')
         final_report[:node_uuid] = @config['node_uuid'] || @config['target_id']
-        raise Inspec::ReporterError, 'Cannot find a UUID for your node. Please specify one via json-config.' if final_report[:node_uuid].nil?
+        if final_report[:node_uuid].nil?
+          raise Inspec::ReporterError,
+                'Cannot find a UUID for your node. ' \
+                'Please specify one via json-config.'
+        end
 
+        # rubocop:disable Metrics/LineLength
         final_report[:report_uuid] = @config['report_uuid'] || uuid_from_string(final_report[:end_time] + final_report[:node_uuid])
+        # rubocop:enable Metrics/LineLength
 
         final_report
       end
@@ -76,6 +85,7 @@ module InspecPlugins
         ary[3] = (ary[3] & 0x3FFF) | 0x8000
         # rubocop:disable Style/FormatString
         '%08x-%04x-%04x-%04x-%04x%08x' % ary
+        # rubocop:enable Style/FormatString
       end
     end
   end
