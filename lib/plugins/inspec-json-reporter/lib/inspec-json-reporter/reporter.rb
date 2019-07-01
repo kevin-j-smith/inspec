@@ -11,8 +11,6 @@ module InspecPlugins
         super
       end
 
-      private
-
       def report
         {
           platform: platform,
@@ -23,6 +21,8 @@ module InspecPlugins
           version: @run_data[:version],
         }
       end
+
+      private
 
       def platform
         platform = {

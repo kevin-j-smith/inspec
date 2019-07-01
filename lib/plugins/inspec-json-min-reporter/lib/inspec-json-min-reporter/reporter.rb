@@ -11,8 +11,6 @@ module InspecPlugins
         super
       end
 
-      private
-
       def report # rubocop:disable Metrics/MethodLength, Metrics/LineLength, Metrics/PerceivedComplexity
         report = {
           controls: [],

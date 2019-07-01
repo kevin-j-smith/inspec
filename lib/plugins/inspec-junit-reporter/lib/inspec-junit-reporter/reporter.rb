@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module InspecPlugins
   module JunitReporter
     # The JUnit Reporter will report run results in the

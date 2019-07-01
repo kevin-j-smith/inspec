@@ -3,13 +3,18 @@
 require "json"
 require "net/http"
 
+require "inspec/reporter_registry"
+
 module InspecPlugins
   module AutomateReporter
     # The Automate Reporter plugin allows users to
     #   report run results to the Automate Server
     class Reporter < Inspec.plugin(2, :reporter)
+      # TODO: The initial Automate reporter extened the JsonAutomate class
       def initialize(config)
         super(config)
+
+        Inspec::ReporterRegistry.register_reporter("inspec-json-automate-reporter", config)
 
         # allow the insecure flag
         @config["verify_ssl"] = !@config["insecure"] if @config.key?("insecure")
@@ -54,6 +59,7 @@ module InspecPlugins
 
       def enriched_report # rubocop:disable Metrics/MethodLength, Metrics/LineLength
         # grab the report from the parent class
+        report = Inspec::ReporterRegistry.rendered_output("inspec-json-automate-reporter")
         final_report = report
 
         # Label this content as an inspec_report

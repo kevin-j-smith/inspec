@@ -2,6 +2,8 @@
 
 require "json"
 
+require "inspec/reporter_registry"
+
 module InspecPlugins
   module JsonAutomateReporter
     # The Json Automate Reporter will report run results in
@@ -9,6 +11,9 @@ module InspecPlugins
     class Reporter < Inspec.plugin(2, :reporter)
       def initialize(config)
         super(config)
+
+        Inspec::ReporterRegistry.register_reporter("inspec-json-reporter")
+
         @profiles = []
       end
 
@@ -17,11 +22,10 @@ module InspecPlugins
         super
       end
 
-      private
-
       def report # rubocop:disable Metrics/MethodLength
         # grab profiles from the json parent class
-        @profiles = profiles
+        json_reporter_output = Inspec::ReporterRegistry.rendered_output("inspec-json-reporter")
+        @profiles = json_reporter_output["profiles"]
 
         output = {
           platform: platform,
@@ -38,6 +42,8 @@ module InspecPlugins
         end
         output
       end
+
+      private
 
       def merge_profiles
         @profiles.each do |profile|

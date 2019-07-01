@@ -89,7 +89,7 @@ class PluginManagerCliList < Minitest::Test
     result = run_inspec_process_with_this_plugin("plugin list --all")
 
     skip_windows!
-    assert_includes result.stdout, "6 plugin(s) total", "--all list should find six"
+    assert_includes result.stdout, "13 plugin(s) total", "--all list should find six"
     assert_includes result.stdout, "inspec-plugin-manager-cli", "--all list should find inspec-plugin-manager-cli"
     assert_includes result.stdout, "habitat", "--all list should find habitat"
 
@@ -98,8 +98,7 @@ class PluginManagerCliList < Minitest::Test
     # TODO: split
     result = run_inspec_process_with_this_plugin("plugin list -a")
 
-    assert_includes result.stdout, "6 plugin(s) total", "-a list should find six"
-
+    assert_includes result.stdout, "13 plugin(s) total", "-a list should find six"
     assert_exit_code 0, result
   end
 

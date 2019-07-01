@@ -48,13 +48,29 @@ module Inspec
       end
     end
 
-    def report(_run_data)
-      @plugins.each { |plugin| plugin.report(@run_data) }
+    def rendered_output(plugin_name)
+      requested_plugins = @plugins.select do |activator|
+        activator.plugin_name == plugin_name
+      end
+
+      return requested_plugins.first.rendered_output unless requested_plugins.length == 1 # rubocop:disable Metrics/LineLength
+      ""
+    end
+
+    def report(run_data)
+      @plugins.each { |plugin| plugin.report(run_data) }
     end
 
     #-------------------------------------------------------------#
     #               Other Support
     #-------------------------------------------------------------#
+
+    def self.all_reporting_to_stdout?
+      @@reporters.each do |reporter, config|
+        return false unless config["stdout"] == true
+      end
+      true
+    end
 
     # Used in testing
     def __reset
@@ -66,6 +82,7 @@ module Inspec
     # have to call #instance when calling the registry
     %i{
       render_output
+      rendered_output
       report
     }.each do |meth|
       define_singleton_method(meth) do |*args|
