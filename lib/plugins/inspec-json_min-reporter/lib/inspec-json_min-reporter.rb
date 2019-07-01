@@ -1,4 +1,3 @@
-
 module InspecPlugins
   module JsonMinReporter
     class Plugin < Inspec.plugin(2)

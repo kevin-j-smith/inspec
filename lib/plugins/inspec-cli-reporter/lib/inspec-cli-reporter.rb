@@ -1,4 +1,3 @@
-
 module InspecPlugins
   module CliReporter
     class Plugin < Inspec.plugin(2)

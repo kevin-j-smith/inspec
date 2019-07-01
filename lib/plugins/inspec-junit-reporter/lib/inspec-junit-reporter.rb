@@ -1,4 +1,3 @@
-
 module InspecPlugins
   module JunitReporter
     class Plugin < Inspec.plugin(2)

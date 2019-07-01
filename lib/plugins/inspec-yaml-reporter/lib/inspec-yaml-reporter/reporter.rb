@@ -6,26 +6,26 @@ module InspecPlugins
   module YamlReporter
     class Reporter < Inspec.plugin(2, :reporter)
 
-    def render
-      # TODO: instead find the json reporter and activate it if needed.  Then call its report method.
-      output(report.to_yaml, false)
-      super
-    end
-
-    private
-
-    def report
-      {
-        platform: platform,
-        profiles: profiles,
-        statistics: {
-          duration: @run_data[:statistics][:duration],
-        },
-        version: @run_data[:version],
-      }
-    end
-
-    def platform(@run_data)
+      def render
+        # TODO: instead find the json reporter and activate it if needed.  Then call its report method.
+        output(report.to_yaml, false)
+        super
+      end
+  
+      private
+  
+      def report
+        {
+          platform: platform,
+          profiles: profiles,
+          statistics: {
+            duration: @run_data[:statistics][:duration],
+          },
+          version: @run_data[:version],
+        }
+      end
+  
+      def platform(@run_data)
         platform = {
           name: @run_data[:platform][:name],
           release: @run_data[:platform][:release],

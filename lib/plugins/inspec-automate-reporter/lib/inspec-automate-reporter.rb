@@ -1,4 +1,3 @@
-
 module InspecPlugins
   module AutomateReporter
     class Plugin < Inspec.plugin(2)

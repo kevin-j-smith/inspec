@@ -1,4 +1,3 @@
-
 module InspecPlugins
   module YamlReporter
     class Plugin < Inspec.plugin(2)

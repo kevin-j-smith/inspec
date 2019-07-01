@@ -1,84 +1,84 @@
 # frozen_string_literal: true
-  
-require "json"
+
+require 'json'
 
 module InspecPlugins
   module JsonAutomateReporter
     class Reporter < Inspec.plugin(2, :reporter)
-
-    def initialize(config)
-      super(config)
-      @profiles = []
-    end
-
-    def render
-      output(report.to_json, false)
-      super
-    end
-
-    private
-
-    def report
-      # grab profiles from the json parent class
-      @profiles = profiles
-
-      output = {
-        platform: platform,
-        profiles: merge_profiles,
-        statistics: {
-          duration: @run_data[:statistics][:duration],
-        },
-        version: @run_data[:version],
-      }
-
-      # optional json-config passthrough options
-      %w{node_name environment roles job_uuid passthrough}.each do |option|
-        output[option.to_sym] = @config[option] unless @config[option].nil?
-      end
-      output
-    end
-
-    def merge_profiles
-      @profiles.each do |profile|
-        next unless profile.key?(:parent_profile)
-
-        parent_profile = find_master_parent(profile)
-        merge_controls(parent_profile, profile)
-        merge_depends(parent_profile, profile)
+      def initialize(config)
+        super(config)
+        @profiles = []
       end
 
-      # delete child profiles
-      @profiles.delete_if { |p| p.key?(:parent_profile) }
+      def render
+        output(report.to_json, false)
+        super
+      end
 
-      @profiles
-    end
+      private
 
-    def find_master_parent(profile)
-      return profile unless profile.key?(:parent_profile)
+      def report
+        # grab profiles from the json parent class
+        @profiles = profiles
 
-      parent_profile = @profiles.select { |parent| parent[:name] == profile[:parent_profile] }.first
-      find_master_parent(parent_profile)
-    end
+        output = {
+          platform: platform,
+          profiles: merge_profiles,
+          statistics: {
+            duration: @run_data[:statistics][:duration]
+          },
+          version: @run_data[:version]
+        }
 
-    def merge_controls(parent, child)
-      parent[:controls].each do |control|
-        child_control = child[:controls].select { |c| c[:id] == control[:id] }.first
-        next if child_control.nil?
+        # optional json-config passthrough options
+        %w[node_name environment roles job_uuid passthrough].each do |option|
+          output[option.to_sym] = @config[option] unless @config[option].nil?
+        end
+        output
+      end
 
-        control.each do |name, _value|
-          child_value = child_control[name]
-          next if child_value.nil? || (child_value.respond_to?(:empty?) && child_value.empty?)
+      def merge_profiles
+        @profiles.each do |profile|
+          next unless profile.key?(:parent_profile)
 
-          control[name] = child_value
+          parent_profile = find_master_parent(profile)
+          merge_controls(parent_profile, profile)
+          merge_depends(parent_profile, profile)
+        end
+
+        # delete child profiles
+        @profiles.delete_if { |p| p.key?(:parent_profile) }
+
+        @profiles
+      end
+
+      def find_master_parent(profile)
+        return profile unless profile.key?(:parent_profile)
+
+        parent_profile = @profiles.select { |parent| parent[:name] == profile[:parent_profile] }.first
+        find_master_parent(parent_profile)
+      end
+
+      def merge_controls(parent, child)
+        parent[:controls].each do |control|
+          child_control = child[:controls].select { |c| c[:id] == control[:id] }.first
+          next if child_control.nil?
+
+          control.each do |name, _value|
+            child_value = child_control[name]
+            next if child_value.nil? || (child_value.respond_to?(:empty?) && child_value.empty?)
+
+            control[name] = child_value
+          end
         end
       end
-    end
 
-    def merge_depends(parent, child)
-      return unless child.key?(:depends)
+      def merge_depends(parent, child)
+        return unless child.key?(:depends)
 
-      child[:depends].each do |d|
-        parent[:depends] << d
+        child[:depends].each do |d|
+          parent[:depends] << d
+        end
       end
     end
   end
