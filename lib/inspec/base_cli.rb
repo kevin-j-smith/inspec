@@ -222,7 +222,7 @@ module Inspec
     def suppress_log_output?(opts)
       return false if opts["reporter"].nil?
 
-      Inspec::ReporterRegistry.all_reporting_to_stdout?
+      Inspec::ReporterRegistry.report_to_stdout?
     end
 
     def diagnose(_ = nil)

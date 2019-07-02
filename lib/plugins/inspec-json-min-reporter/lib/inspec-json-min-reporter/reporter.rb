@@ -51,6 +51,11 @@ module InspecPlugins
 
         report
       end
+
+      def report_to_stdout?
+        return super unless config.include? "file"
+        false
+      end
     end
   end
 end

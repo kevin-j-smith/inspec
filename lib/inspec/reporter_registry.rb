@@ -50,32 +50,30 @@ module Inspec
     end
 
     def report(run_data)
-      @plugins.each { |plugin| plugin.report(run_data) }
+      reports = @plugins.map { |plugin| plugin.report(run_data) }
+      reports.empty? ? {} : reports.first
     end
 
     #-------------------------------------------------------------#
     #               Other Support
     #-------------------------------------------------------------#
-
-    def self.all_reporting_to_stdout?
-      @@reporters.each do |reporter, config|
-        return false unless config["stdout"] == true
-      end
-      true
+    def report_to_stdout?
+      report_to_stdout = @plugins.map { |plugin| plugin.report_to_stdout? }
+      report_to_stdout.include? true
     end
 
     # Used in testing
     def __reset
-      @inputs_by_profile = {}
-      @profile_aliases = {}
+      @plugins = {}
+      @@reporters = {}
     end
 
     # These class methods are convenience methods so you don"t always
     # have to call #instance when calling the registry
     %i{
       render_output
-      rendered_output
       report
+      report_to_stdout?
     }.each do |meth|
       define_singleton_method(meth) do |*args|
         instance.send(meth, *args)

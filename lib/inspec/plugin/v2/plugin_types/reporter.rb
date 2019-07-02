@@ -57,6 +57,11 @@ module Inspec
             end
           end
 
+          def report_to_stdout?
+            return false unless config.include? "stdout"
+            config["stdout"]
+          end
+
           protected
 
           def register_child_reporter(plugin_name, config)

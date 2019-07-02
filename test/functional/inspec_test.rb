@@ -11,6 +11,10 @@ describe "command tests" do
       out.stderr.must_equal ""
 
       assert_exit_code 0, out
+
+      # Tolerate working on an out of date branch
+      output = out.stdout.split("\n").reject { |l| l.start_with?("Your version of Chef InSpec is out of date!") || l.empty? }.join("\n") + "\n"
+      output.must_equal Inspec::VERSION + "\n"
     end
 
     it "prints the version as JSON when the format is specified as JSON" do
