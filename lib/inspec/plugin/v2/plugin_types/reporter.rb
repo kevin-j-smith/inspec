@@ -1,4 +1,5 @@
 require "inspec/config"
+require "inspec/plugin/v2/registry"
 
 module Inspec
   module Plugin
@@ -16,9 +17,14 @@ module Inspec
           def initialize(config)
             @config = config
             @output = ""
+            # rubocop:disable Metrics/LineLength
+            register_child_reporter(config["child_reporter"].to_sym, { "stdout" => false }) if config.include? "child_reporter"
+            # rubocop:enable Metrics/LineLength
+            @run_data = {}
           end
 
-          attr_reader :config
+          attr_reader :config, :child_reporter
+          attr_writer :run_data
 
           # Append output
           # @param String output string
@@ -49,10 +55,17 @@ module Inspec
               print @output
               $stdout.flush
             end
-            @output = ""
           end
 
-          attr_writer :run_data
+          protected
+
+          def register_child_reporter(plugin_name, config)
+            # rubocop:disable Metrics/LineLength
+            @child_reporter = Inspec::Plugin::V2::Registry.instance.find_activator(plugin_name: plugin_name)
+            # rubocop:enable Metrics/LineLength
+            @child_reporter.activate!
+            @child_reporter = @child_reporter.implementation_class.new config
+          end
         end
       end
     end

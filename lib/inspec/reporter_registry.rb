@@ -6,6 +6,8 @@ require "inspec/config"
 require "inspec/exceptions"
 require "inspec/plugin/v2"
 
+require "yaml"
+
 module Inspec
   # The ReporterRegistry"s responsibilities include:
   #   - maintaining a list of Reproter objects that are called to report results
@@ -31,9 +33,8 @@ module Inspec
         @@reporters.key?(activator.plugin_name)
       end
       @plugins = @plugins.map do |activator|
-        reporter_configuration_options = @@reporters[activator.plugin_name]
         activator.activate!
-        activator.implementation_class.new reporter_configuration_options
+        activator.implementation_class.new @@reporters[activator.plugin_name]
       end
     end
 
@@ -46,15 +47,6 @@ module Inspec
         plugin.run_data = run_data
         plugin.render
       end
-    end
-
-    def rendered_output(plugin_name)
-      requested_plugins = @plugins.select do |activator|
-        activator.plugin_name == plugin_name
-      end
-
-      return requested_plugins.first.rendered_output unless requested_plugins.length == 1 # rubocop:disable Metrics/LineLength
-      ""
     end
 
     def report(run_data)

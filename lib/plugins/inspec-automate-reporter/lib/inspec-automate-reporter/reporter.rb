@@ -3,8 +3,6 @@
 require "json"
 require "net/http"
 
-require "inspec/reporter_registry"
-
 module InspecPlugins
   module AutomateReporter
     # The Automate Reporter plugin allows users to
@@ -12,9 +10,8 @@ module InspecPlugins
     class Reporter < Inspec.plugin(2, :reporter)
       # TODO: The initial Automate reporter extened the JsonAutomate class
       def initialize(config)
+        config["child_reporter"] = "inspec-json-automate-reporter"
         super(config)
-
-        Inspec::ReporterRegistry.register_reporter("inspec-json-automate-reporter", config)
 
         # allow the insecure flag
         @config["verify_ssl"] = !@config["insecure"] if @config.key?("insecure")
@@ -24,6 +21,9 @@ module InspecPlugins
       end
 
       def render # rubocop:disable Metrics/MethodLength
+        @child_reporter.run_data = @run_data
+        @child_reporter.render
+ 
         headers = { "Content-Type" => "application/json" }
         headers["x-data-collector-token"] = @config["token"]
         headers["x-data-collector-auth"] = "version=1.0"
@@ -59,7 +59,7 @@ module InspecPlugins
 
       def enriched_report # rubocop:disable Metrics/MethodLength, Metrics/LineLength
         # grab the report from the parent class
-        report = Inspec::ReporterRegistry.rendered_output("inspec-json-automate-reporter")
+        report = @child_reporter.rendered_output
         final_report = report
 
         # Label this content as an inspec_report

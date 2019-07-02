@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require "json"
-
-require "inspec/reporter_registry"
+require "yaml"
 
 module InspecPlugins
   module JsonAutomateReporter
@@ -10,25 +9,26 @@ module InspecPlugins
     #   Json that can be consumed by the Automate server
     class Reporter < Inspec.plugin(2, :reporter)
       def initialize(config)
+        config["child_reporter"] = "inspec-json-reporter"
         super(config)
-
-        Inspec::ReporterRegistry.register_reporter("inspec-json-reporter")
 
         @profiles = []
       end
 
       def render
+        @child_reporter.run_data = @run_data
+        @child_reporter.render
         output(report.to_json, false)
         super
       end
 
       def report # rubocop:disable Metrics/MethodLength
         # grab profiles from the json parent class
-        json_reporter_output = Inspec::ReporterRegistry.rendered_output("inspec-json-reporter")
-        @profiles = json_reporter_output["profiles"]
+        json_reporter_output = JSON.parse(@child_reporter.rendered_output)
+        @profiles = json_reporter_output['profiles']
 
         output = {
-          platform: platform,
+          platform: json_reporter_output["platform"],
           profiles: merge_profiles,
           statistics: {
             duration: @run_data[:statistics][:duration],
