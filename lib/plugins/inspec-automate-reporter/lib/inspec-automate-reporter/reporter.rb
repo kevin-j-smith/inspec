@@ -23,7 +23,7 @@ module InspecPlugins
       def render # rubocop:disable Metrics/MethodLength
         @child_reporter.run_data = @run_data
         @child_reporter.render
- 
+
         headers = { "Content-Type" => "application/json" }
         headers["x-data-collector-token"] = @config["token"]
         headers["x-data-collector-auth"] = "version=1.0"

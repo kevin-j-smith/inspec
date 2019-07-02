@@ -25,7 +25,7 @@ module InspecPlugins
       def report # rubocop:disable Metrics/MethodLength
         # grab profiles from the json parent class
         json_reporter_output = JSON.parse(@child_reporter.rendered_output)
-        @profiles = json_reporter_output['profiles']
+        @profiles = json_reporter_output["profiles"]
 
         output = {
           platform: json_reporter_output["platform"],
