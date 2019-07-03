@@ -72,6 +72,10 @@ module InspecPlugins
         super
       end
 
+      def report_to_stdout?
+        false
+      end
+
       private
 
       def print_profile_header(profile) # rubocop:disable Metrics/MethodLength, Metrics/LineLength
