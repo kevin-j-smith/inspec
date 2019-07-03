@@ -24,7 +24,7 @@ module InspecPlugins
         @child_reporter.run_data = @run_data
         @child_reporter.render
         super
-        send_report
+        raise Inspec::ReporterError, "Error generating reporter 'automate'" unless send_report
       end
 
       def enriched_report # rubocop:disable Metrics/MethodLength

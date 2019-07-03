@@ -50,6 +50,7 @@ module Inspec
     end
 
     def report(run_data)
+      puts "REPORT: #{@plugings}"
       reports = @plugins.map { |plugin| plugin.report(run_data) }
       reports.empty? ? {} : reports.first
     end
@@ -57,10 +58,6 @@ module Inspec
     #-------------------------------------------------------------#
     #               Other Support
     #-------------------------------------------------------------#
-    def report_to_stdout?
-      report_to_stdout = @plugins.map { |plugin| plugin.report_to_stdout? }
-      report_to_stdout.include? true
-    end
 
     # Used in testing
     def __reset

@@ -48,9 +48,9 @@ module InspecPlugins
         @run_data[:profiles].each do |profile|
           if profile[:status] == "skipped"
             platform = @run_data[:platform]
-            output("Skipping profile: \"#{profile[:name]}\" " \
+            output("Skipping profile: '#{profile[:name]}' " \
                    "on unsupported platform: " \
-                   "\"#{platform[:name]}/#{platform[:release]}\".")
+                   "'#{platform[:name]}/#{platform[:release]}'.")
             next
           end
           @control_count = 0
